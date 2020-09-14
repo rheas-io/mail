@@ -1,7 +1,7 @@
-import { IMail, IMailer } from '@rheas/contracts/mail';
 import { IMessage } from '@rheas/contracts/notifications';
+import { IMail, IMailer, IMailMessage } from '@rheas/contracts/mail';
 
-export class MailMessage implements IMessage {
+export class MailMessage implements IMailMessage {
     /**
      * The underlying email object of this message.
      *
@@ -56,6 +56,15 @@ export class MailMessage implements IMessage {
      */
     public channel(): string {
         return this._channel;
+    }
+
+    /**
+     * Returns the underlying email.
+     *
+     * @returns
+     */
+    public mail(): IMail {
+        return this._mail;
     }
 
     /**
