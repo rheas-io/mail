@@ -1,3 +1,4 @@
+import { Mailer } from './mailer';
 import { MailServiceProvider } from './mailServiceProvider';
 
-export { MailServiceProvider };
+export { Mailer, MailServiceProvider };

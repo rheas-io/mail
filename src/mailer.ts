@@ -1,17 +1,77 @@
-import Mail from 'nodemailer/lib/mailer';
+import { Obj } from '@rheas/support';
 import { DriverManager } from '@rheas/services';
+import Mail, { Options } from 'nodemailer/lib/mailer';
+import { IMailConfig } from '@rheas/contracts/configs';
 import { ILaterTime } from '@rheas/contracts/notifications';
 import { IMailer, IMailMessage } from '@rheas/contracts/mail';
 
 export class Mailer extends DriverManager<Mail> implements IMailer {
     /**
-     * Send the given email message immediately using the channel
-     * specified in the message or using a default channel.
+     * The applications default email settings.
+     *
+     * @var IMailConfig
+     */
+    protected _config: IMailConfig;
+
+    /**
+     * Creates a new mailer instance with the given config.
+     *
+     * @param config
+     */
+    constructor(config: IMailConfig) {
+        super();
+
+        this._config = config;
+    }
+
+    /**
+     * Send the given email message immediately using the channel specified
+     * in the message or using a default channel.
      *
      * @param message
+     * @throws InvalidArgumentException
      */
-    public now(message: IMailMessage): void {
-        
+    public async now(message: IMailMessage): Promise<any> {
+        const transporter: Mail = this.getTransporterFor(message);
+
+        const data: Options = this.withDefaultOptions(message.mail().data());
+
+        return await transporter.sendMail(data);
+    }
+
+    /**
+     * Gets the transporter to be used for sending the message. Throws
+     * an exception, if a transporter for the given channel is not registered.
+     *
+     * @param message
+     * @throws InvalidArgumentException
+     */
+    protected getTransporterFor(message: IMailMessage): Mail {
+        const transporter: Mail = this.getDriver(message.channel());
+
+        return transporter;
+    }
+
+    /**
+     * Sets default options on mandatory missing fields.
+     *
+     * @param data
+     */
+    protected withDefaultOptions(data: Options): Options {
+        if (!data.from) {
+            data.from = Obj.get(this._config, 'from');
+
+            // We will set reply-to only if there was no from address in the
+            // data. In short, if we are using the from address from the config,
+            // we will set the replyTo from the config, that too if it is not
+            // already set. If from address is set, emai clients will replyTo that
+            // address or the specific replyTo address set on the data.
+            if (!data.replyTo) {
+                data.replyTo = Obj.get(this._config, 'replyTo');
+            }
+        }
+
+        return data;
     }
 
     /**

@@ -1,61 +1,25 @@
+import { Address } from './address';
+import { Arr } from '@rheas/support';
 import { AnyObject } from '@rheas/contracts';
-import { IMail } from '@rheas/contracts/mail';
+import { Options } from 'nodemailer/lib/mailer';
 import { view as newView } from '@rheas/support/helpers';
+import { IMail, Addresses } from '@rheas/contracts/mail';
 
-export class Mail {
+export class Mail implements IMail {
     /**
-     * Email from address.
+     * Stores all the properties needed to send an email.
      *
-     * @var string
+     * @var Options
      */
-    protected _from: string | undefined;
-
-    /**
-     * Email to address.
-     *
-     * @var string
-     */
-    protected _to: string | undefined;
-
-    /**
-     * Email reply-to address.
-     *
-     * @var string
-     */
-    protected _replyTo: string | undefined;
-
-    /**
-     * Email html message.
-     *
-     * @var string
-     */
-    protected _html: string = '';
-
-    /**
-     * Email plain text message.
-     *
-     * @var string
-     */
-    protected _raw: string = '';
+    protected _data: Options = {};
 
     /**
      * Sets the email from address.
      *
      * @param email
      */
-    public from(email: string): IMail {
-        this._from = email;
-
-        return this;
-    }
-
-    /**
-     * Sets the email to address.
-     *
-     * @param email
-     */
-    public to(email: string): IMail {
-        this._to = email;
+    public from(email: string | Address): IMail {
+        this._data.from = email;
 
         return this;
     }
@@ -65,8 +29,52 @@ export class Mail {
      *
      * @param email
      */
-    public replyTo(email: string): IMail {
-        this._replyTo = email;
+    public replyTo(email: string | Address): IMail {
+        this._data.replyTo = email;
+
+        return this;
+    }
+
+    /**
+     * Sets the email to address.
+     *
+     * @param email
+     */
+    public to(email: Addresses): IMail {
+        this._data.to = Arr.append(email, this._data.to);
+
+        return this;
+    }
+
+    /**
+     * Sets the email cc addresses.
+     *
+     * @param email
+     */
+    public cc(email: Addresses): IMail {
+        this._data.cc = Arr.append(email, this._data.cc);
+
+        return this;
+    }
+
+    /**
+     * Sets the email to address.
+     *
+     * @param email
+     */
+    public bcc(email: Addresses): IMail {
+        this._data.bcc = Arr.append(email, this._data.bcc);
+
+        return this;
+    }
+
+    /**
+     * Sets the email subject.
+     *
+     * @param subject
+     */
+    public subject(subject: string): IMail {
+        this._data.subject = subject;
 
         return this;
     }
@@ -77,18 +85,41 @@ export class Mail {
      * @param html
      */
     public html(html: string): IMail {
-        this._html = html;
+        this._data.html = html;
 
         return this;
     }
 
     /**
-     * Sets the email raw/plain text contents.
+     * Sets the email text contents.
+     *
+     * @param text
+     */
+    public text(text: string): IMail {
+        this._data.text = text;
+
+        return this;
+    }
+
+    /**
+     * Sets the email raw contents.
      *
      * @param raw
      */
     public raw(raw: string): IMail {
-        this._raw = raw;
+        this._data.raw = raw;
+
+        return this;
+    }
+
+    /**
+     * Sets new nodemailer data. This function will override any existing data
+     * that is set for a duplicate key in the `fields`.
+     *
+     * @param fields
+     */
+    public setData(fields: Options): IMail {
+        this._data = Object.assign(this._data, fields);
 
         return this;
     }
@@ -117,9 +148,15 @@ export class Mail {
      * @returns
      */
     public render(): string {
-        if (this._html) {
-            return this._html;
-        }
-        return this._raw || '';
+        return this._data.html?.toString() || this._data.text?.toString() || '';
+    }
+
+    /**
+     * Returns the email details including the envelope.
+     *
+     * @returns
+     */
+    public data(): Options {
+        return this._data;
     }
 }

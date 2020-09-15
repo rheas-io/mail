@@ -26,10 +26,10 @@ export class MailMessage implements IMailMessage {
     /**
      * Creates a new email message.
      *
-     * @param mail
      * @param mailer
+     * @param mail
      */
-    constructor(mail: IMail, mailer: IMailer) {
+    constructor(mailer: IMailer, mail: IMail) {
         this._mail = mail;
         this._mailer = mailer;
     }

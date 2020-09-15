@@ -1,5 +1,7 @@
 import { Mailer } from './mailer';
+import { IApp } from '@rheas/contracts/core/app';
 import { ServiceProvider } from '@rheas/services';
+import { IMailConfig } from '@rheas/contracts/configs';
 import { InstanceHandler } from '@rheas/contracts/container';
 
 export class MailServiceProvider extends ServiceProvider {
@@ -14,7 +16,9 @@ export class MailServiceProvider extends ServiceProvider {
      */
     public serviceResolver(): InstanceHandler {
         return (app) => {
-            return new Mailer();
+            const mailConfig: IMailConfig = (app as IApp).configs().get('mail');
+
+            return new Mailer(mailConfig);
         };
     }
 }
