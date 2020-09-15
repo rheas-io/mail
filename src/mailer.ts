@@ -73,10 +73,10 @@ export class Mailer extends DriverManager<Mail> implements IMailer {
             data.from = Obj.get(this._config, 'from');
 
             // We will set reply-to only if there was no from address in the
-            // data. In short, if we are using the from address from the config,
-            // we will set the replyTo from the config, that too if it is not
-            // already set. If from address is set, emai clients will replyTo that
-            // address or the specific replyTo address set on the data.
+            // data. If we are using the from address from the config, we will set
+            // the replyTo in the config, that too if it is not already explicitely
+            // set. If from address is set, email clients will replyTo that address
+            // or the specific replyTo address set on the data.
             if (!data.replyTo) {
                 data.replyTo = Obj.get(this._config, 'replyTo');
             }
