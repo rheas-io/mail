@@ -143,6 +143,19 @@ export class Mail implements IMail {
     }
 
     /**
+     * Returns true if the mail has at least one recipient.
+     *
+     * @returns
+     */
+    public hasRecipients(): boolean {
+        return (
+            !Arr.isEmpty(Arr.wrap(this._data.to)) ||
+            !Arr.isEmpty(Arr.wrap(this._data.cc)) ||
+            !Arr.isEmpty(Arr.wrap(this._data.bcc))
+        );
+    }
+
+    /**
      * Returns the html content of this email.
      *
      * @returns

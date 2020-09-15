@@ -1,9 +1,10 @@
 import { Obj } from '@rheas/support';
+import { Exception } from '@rheas/errors';
 import { DriverManager } from '@rheas/services';
 import Mail, { Options } from 'nodemailer/lib/mailer';
 import { IMailConfig } from '@rheas/contracts/configs';
 import { ILaterTime } from '@rheas/contracts/notifications';
-import { IMailer, IMailMessage } from '@rheas/contracts/mail';
+import { IMail, IMailer, IMailMessage } from '@rheas/contracts/mail';
 
 export class Mailer extends DriverManager<Mail> implements IMailer {
     /**
@@ -28,13 +29,16 @@ export class Mailer extends DriverManager<Mail> implements IMailer {
      * Send the given email message immediately using the channel specified
      * in the message or using a default channel.
      *
+     * Throws error when a set channel is not found, or when sending mail fails.
+     *
      * @param message
      * @throws InvalidArgumentException
+     * @throws Exception when no recipients are set on the mail.
      */
     public async now(message: IMailMessage): Promise<any> {
         const transporter: Mail = this.getTransporterFor(message);
 
-        const data: Options = this.withDefaultOptions(message.mail().data());
+        const data: Options = this.validatedMailData(message.mail());
 
         return await transporter.sendMail(data);
     }
@@ -53,11 +57,18 @@ export class Mailer extends DriverManager<Mail> implements IMailer {
     }
 
     /**
-     * Sets default options on mandatory missing fields.
+     * Validates the email mandatory fields and sets missing one with the
+     * data from the configuration.
      *
      * @param data
      */
-    protected withDefaultOptions(data: Options): Options {
+    protected validatedMailData(mail: IMail): Options {
+        const data = mail.data();
+
+        if (!mail.hasRecipients()) {
+            throw new Exception('No recipients set for delivery. At least one should be set.');
+        }
+
         if (!data.from) {
             data.from = Obj.get(this._config, 'from');
 

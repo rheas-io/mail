@@ -72,7 +72,7 @@ export class MailMessage implements IMailMessage {
      *
      * @returns
      */
-    public send(): void {
+    public async send(): Promise<void> {
         return this._mailer.now(this);
     }
 }
