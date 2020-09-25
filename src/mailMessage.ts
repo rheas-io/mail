@@ -1,7 +1,9 @@
+import { IJsonMail } from '@rheas/contracts/mail';
+import { IQueableTask } from '@rheas/contracts/queue';
 import { IMessage } from '@rheas/contracts/notifications';
 import { IMail, IMailer, IMailMessage } from '@rheas/contracts/mail';
 
-export class MailMessage implements IMailMessage {
+export class MailMessage implements IMailMessage, IQueableTask<IJsonMail> {
     /**
      * The underlying email object of this message.
      *
@@ -74,5 +76,18 @@ export class MailMessage implements IMailMessage {
      */
     public async send(): Promise<void> {
         return this._mailer.now(this);
+    }
+
+    /**
+     * Returns the object data in plain JSON format that can be used to
+     * recreate the message.
+     *
+     * @returns
+     */
+    public queableTaskData(): IJsonMail {
+        return {
+            channel: this._channel,
+            mail: this._mail.data(),
+        };
     }
 }

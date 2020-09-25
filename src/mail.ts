@@ -1,9 +1,9 @@
 import { Address } from './address';
 import { Arr } from '@rheas/support';
-import { AnyObject } from '@rheas/contracts';
 import { Options } from 'nodemailer/lib/mailer';
 import { view as newView } from '@rheas/support/helpers';
 import { IMail, Addresses } from '@rheas/contracts/mail';
+import { AnyObject, JsonObject } from '@rheas/contracts';
 
 export class Mail implements IMail {
     /**
@@ -11,7 +11,7 @@ export class Mail implements IMail {
      *
      * @var Options
      */
-    protected _data: Options = {};
+    protected _data: Options & JsonObject = {};
 
     /**
      * Sets the email from address.
@@ -118,7 +118,7 @@ export class Mail implements IMail {
      *
      * @param fields
      */
-    public setData(fields: Options): IMail {
+    public setData(fields: Options & JsonObject): IMail {
         this._data = Object.assign(this._data, fields);
 
         return this;
@@ -169,7 +169,7 @@ export class Mail implements IMail {
      *
      * @returns
      */
-    public data(): Options {
+    public data(): Options & JsonObject {
         return this._data;
     }
 }
