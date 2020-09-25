@@ -23,8 +23,8 @@ export class MailJob extends Job<IJsonMail> {
      * sends the email message using application `mailer`.
      */
     public async process(): Promise<any> {
-        const mail = new Mail().setData(this._data);
+        const mail = new Mail().setData(this._data.mail);
 
-        return await mailMessage(mail).send();
+        return await mailMessage(mail).via(this._data.channel).send();
     }
 }
