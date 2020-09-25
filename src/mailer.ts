@@ -1,6 +1,9 @@
+import { MailJob } from './mailJob';
 import { Obj } from '@rheas/support';
 import { Exception } from '@rheas/errors';
+import { queue } from '@rheas/support/helpers';
 import { DriverManager } from '@rheas/services';
+import { IQueableTask } from '@rheas/contracts/queue';
 import Mail, { Options } from 'nodemailer/lib/mailer';
 import { IMailConfig } from '@rheas/contracts/configs';
 import { ILaterTime } from '@rheas/contracts/notifications';
@@ -88,10 +91,14 @@ export class Mailer extends DriverManager<Mail> implements IMailer {
     /**
      * Send the given message at a later time.
      *
+     * We will create a new `MailJob` and insert it to the default queue.
+     *
      * @param message
      * @param later
      */
-    public later(message: IMailMessage, later: ILaterTime): void {
-        throw new Error('Method not implemented.');
+    public later(message: IMailMessage & IQueableTask, later: ILaterTime): void {
+        const job = new MailJob(message.queableTaskData());
+
+        queue().insert(job.later(later));
     }
 }
