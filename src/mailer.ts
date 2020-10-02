@@ -1,5 +1,5 @@
 import { MailJob } from './mailJob';
-import { Obj } from '@rheas/support';
+import { Obj } from '@rheas/support/obj';
 import { Exception } from '@rheas/errors';
 import { queue } from '@rheas/support/helpers';
 import { DriverManager } from '@rheas/services';

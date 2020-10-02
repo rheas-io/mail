@@ -1,5 +1,5 @@
 import { Address } from './address';
-import { Arr } from '@rheas/support';
+import { Arr } from '@rheas/support/arr';
 import { Options } from 'nodemailer/lib/mailer';
 import { view as newView } from '@rheas/support/helpers';
 import { IMail, Addresses } from '@rheas/contracts/mail';
