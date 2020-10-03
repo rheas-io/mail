@@ -1,6 +1,6 @@
 {
   "name": "@rheas/mail",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Email handling module of rheas framework",
   "main": "./index.js",
   "directories": {
