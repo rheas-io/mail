@@ -1,4 +1,5 @@
 import { Mailer } from './mailer';
+import nodemailer from 'nodemailer';
 import { IApp } from '@rheas/contracts/core/app';
 import { ServiceProvider } from '@rheas/services';
 import { IMailConfig } from '@rheas/contracts/configs';
@@ -20,5 +21,14 @@ export class MailServiceProvider extends ServiceProvider {
 
             return new Mailer(mailConfig);
         };
+    }
+
+    /**
+     * Register default drivers on the mailer.
+     */
+    public boot() {
+        const mailer: Mailer = this.container.get(this.name);
+
+        mailer.registerDriver('smtp', nodemailer.createTransport({ sendmail: true }));
     }
 }

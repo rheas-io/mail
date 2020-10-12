@@ -26,6 +26,7 @@ export class Mailer extends DriverManager<Mail> implements IMailer {
         super();
 
         this._config = config;
+        this._defaultDriver = config.transporter;
     }
 
     /**
